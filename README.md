@@ -1,7 +1,4 @@
 # Advent Of Code
 
-Programming solutions
+Solving 2021 advent of code using Go
 
-## 2021
-
-- [Day 1](day1_test.go)
