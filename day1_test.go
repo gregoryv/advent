@@ -1,61 +1,31 @@
 package advent
 
 import (
+	"fmt"
 	"io/ioutil"
+	"log"
 	"strconv"
 	"strings"
-	"testing"
 )
 
-func Test_Day1(t *testing.T) {
-	cases := []struct {
-		in          []int
-		exp, expWin int
-		msg         string
-	}{
-		{
-			in:     []int{199, 200, 208, 210, 200, 207, 240, 269, 260, 263},
-			exp:    7,
-			expWin: 5,
-			msg:    "given example",
-		},
-		{
-			in:     loadInts(t, "testdata/1.input"),
-			exp:    1288,
-			expWin: 1311,
-			msg:    "my input",
-		},
-	}
-	for _, c := range cases {
-		t.Run(c.msg, func(t *testing.T) {
-			t.Run("IncreasingInts", func(t *testing.T) {
-				got := IncreasingInts(c.in)
-				if got != c.exp {
-					t.Error("got", got, "exp", c.exp)
-				}
-			})
-			t.Run("IncreasingWindow", func(t *testing.T) {
-				got := IncreasingWindow(c.in, 3)
-				if got != c.expWin {
-					t.Error("got", got, "exp", c.expWin)
-				}
-			})
-		})
-	}
+func Example_IncreaseInts_input() {
+	fmt.Print(IncreasingWindow(loadInts("testdata/1.input"), 1))
+	// output: 1288
 }
 
-func IncreasingInts(in []int) int {
-	var count int
-	prev := in[0]
-	// skip first value
-	for i := 1; i < len(in); i++ {
-		if in[i] > prev {
-			count++
-		}
-		// always save previous
-		prev = in[i]
-	}
-	return count
+func Example_IncreaseInts_given() {
+	fmt.Print(IncreasingWindow(loadInts("testdata/1.given"), 1))
+	// output: 7
+}
+
+func Example_IncreaseWindow_input() {
+	fmt.Print(IncreasingWindow(loadInts("testdata/1.input"), 3))
+	// output: 1311
+}
+
+func Example_IncreaseWindow_given() {
+	fmt.Print(IncreasingWindow(loadInts("testdata/1.given"), 3))
+	// output: 5
 }
 
 func IncreasingWindow(in []int, win int) int {
@@ -70,7 +40,7 @@ func IncreasingWindow(in []int, win int) int {
 	var count int
 	prev := sum(in, win)
 
-	// skip first value
+	// skip first value, nothing to compare with
 	for i := win - 1; i < len(in); i++ {
 		s := sum(in, i)
 		if s > prev {
@@ -83,10 +53,11 @@ func IncreasingWindow(in []int, win int) int {
 }
 
 // ----------------------------------------
-func loadInts(t *testing.T, filename string) []int {
+
+func loadInts(filename string) []int {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
-		t.Fatal(err)
+		log.Fatal(err)
 	}
 	lines := strings.Split(string(data), "\n")
 	in := make([]int, len(lines))
@@ -96,7 +67,7 @@ func loadInts(t *testing.T, filename string) []int {
 		}
 		in[i], err = strconv.Atoi(line)
 		if err != nil {
-			t.Fatal(err)
+			log.Fatal(err)
 		}
 	}
 	return in
