@@ -1,4 +1,4 @@
-package aoc2021
+package advent
 
 import (
 	"io/ioutil"

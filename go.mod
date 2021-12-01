@@ -1,3 +1,3 @@
-module github.com/gregoryv/aoc2021
+module github.com/gregoryv/advent
 
 go 1.17
