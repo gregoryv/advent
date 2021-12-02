@@ -6,32 +6,35 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 )
 
-func Example_Navigate_given() {
-	movements, _ := ioutil.ReadFile("testdata/2.given")
-	pos := Navigate(bytes.NewReader(movements), WithoutAim)
-	fmt.Print(pos.h * pos.d)
-	// output: 150
+func Example_Navigate() {
+	Navigate("testdata/2.given", WithoutAim)
+	Navigate("testdata/2.input", WithoutAim)
+	Navigate("testdata/2.given", WithAim)
+	Navigate("testdata/2.input", WithAim)
+	// output:
+	// 150
+	// 1580000
+	// 900
+	// 1251263225
 }
 
-func Example_Navigate_input() {
-	movements, _ := ioutil.ReadFile("testdata/2.input")
-	pos := Navigate(bytes.NewReader(movements), WithoutAim)
-	fmt.Print(pos.h * pos.d)
-	// output: 1580000
+func Navigate(filename string, calc func(*Position, string)) {
+	movements, _ := ioutil.ReadFile(filename)
+	NavigateTo(os.Stdout, bytes.NewReader(movements), calc)
 }
 
-func Navigate(r io.Reader, calc func(*Position, string)) *Position {
+func NavigateTo(w io.Writer, r io.Reader, calc func(*Position, string)) {
 	s := bufio.NewScanner(r)
 	pos := &Position{}
 	for s.Scan() {
 		calc(pos, s.Text())
 	}
-
-	return pos
+	fmt.Fprintln(w, pos)
 }
 
 func WithoutAim(pos *Position, line string) {
@@ -48,20 +51,6 @@ func WithoutAim(pos *Position, line string) {
 	case "up":
 		pos.d -= v
 	}
-}
-
-func Example_Navigate_WithAim_given() {
-	movements, _ := ioutil.ReadFile("testdata/2.given")
-	pos := Navigate(bytes.NewReader(movements), WithAim)
-	fmt.Print(pos.h * pos.d)
-	// output: 900
-}
-
-func Example_Navigate_WithAim_input() {
-	movements, _ := ioutil.ReadFile("testdata/2.input")
-	pos := Navigate(bytes.NewReader(movements), WithAim)
-	fmt.Print(pos.h * pos.d)
-	// output: 900
 }
 
 func WithAim(pos *Position, line string) {
@@ -86,4 +75,8 @@ type Position struct {
 	aim int
 	h   int
 	d   int
+}
+
+func (me *Position) String() string {
+	return fmt.Sprintf("%v", me.h*me.d)
 }
