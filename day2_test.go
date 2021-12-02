@@ -50,6 +50,38 @@ func WithoutAim(pos *Position, line string) {
 	}
 }
 
+func Example_Navigate_WithAim_given() {
+	movements, _ := ioutil.ReadFile("testdata/2.given")
+	pos := Navigate(bytes.NewReader(movements), WithAim)
+	fmt.Print(pos.h * pos.d)
+	// output: 900
+}
+
+func Example_Navigate_WithAim_input() {
+	movements, _ := ioutil.ReadFile("testdata/2.input")
+	pos := Navigate(bytes.NewReader(movements), WithAim)
+	fmt.Print(pos.h * pos.d)
+	// output: 900
+}
+
+func WithAim(pos *Position, line string) {
+	if line == "" {
+		return
+	}
+	mov := strings.Split(line, " ")
+	v, _ := strconv.Atoi(mov[1])
+	switch mov[0] {
+	case "forward":
+		pos.h += v
+		pos.d = pos.d + (v * pos.aim)
+	case "down":
+		pos.aim += v
+	case "up":
+		pos.aim -= v
+
+	}
+}
+
 type Position struct {
 	aim int
 	h   int
