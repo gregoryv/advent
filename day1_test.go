@@ -2,33 +2,32 @@ package advent
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
 
-func Example_IncreaseInts_input() {
-	fmt.Print(IncreasingWindow(loadInts("testdata/1.input"), 1))
-	// output: 1288
+func Example_Increase() {
+	IncreasingWindow("testdata/1.given", 1)
+	IncreasingWindow("testdata/1.input", 1)
+	IncreasingWindow("testdata/1.given", 3)
+	IncreasingWindow("testdata/1.input", 3)
+	// output:
+	// 7
+	// 1288
+	// 5
+	// 1311
 }
 
-func Example_IncreaseInts_given() {
-	fmt.Print(IncreasingWindow(loadInts("testdata/1.given"), 1))
-	// output: 7
+func IncreasingWindow(filename string, win int) {
+	in := loadInts(filename)
+	IncreasingWindowTo(os.Stdout, in, win)
 }
 
-func Example_IncreaseWindow_input() {
-	fmt.Print(IncreasingWindow(loadInts("testdata/1.input"), 3))
-	// output: 1311
-}
-
-func Example_IncreaseWindow_given() {
-	fmt.Print(IncreasingWindow(loadInts("testdata/1.given"), 3))
-	// output: 5
-}
-
-func IncreasingWindow(in []int, win int) int {
+func IncreasingWindowTo(w io.Writer, in []int, win int) {
 	sum := func(in []int, w int) int {
 		var s int
 		for i := 0; i < win; i++ {
@@ -49,7 +48,7 @@ func IncreasingWindow(in []int, win int) int {
 		// always save previous
 		prev = s
 	}
-	return count
+	fmt.Fprintln(w, count)
 }
 
 // ----------------------------------------
