@@ -11,20 +11,20 @@ import (
 	"strconv"
 )
 
-func Example_CalcRadiation() {
-	CalcRadiation("testdata/3.given", 5) // output: 198
+func Example_PowerCons() {
+	PowerCons("testdata/3.given", 5) // output: 198
 }
 
-func Example_CalcRadiation_input() {
-	CalcRadiation("testdata/3.input", 12) // output: 3009600
+func Example_PowerCons_input() {
+	PowerCons("testdata/3.input", 12) // output: 3009600
 }
 
-func CalcRadiation(filename string, width int) {
+func PowerCons(filename string, width int) {
 	data, _ := ioutil.ReadFile(filename)
-	CalcRadiationTo(os.Stdout, bytes.NewReader(data), width)
+	PowerConsTo(os.Stdout, bytes.NewReader(data), width)
 }
 
-func CalcRadiationTo(w io.Writer, r io.Reader, width int) {
+func PowerConsTo(w io.Writer, r io.Reader, width int) {
 	rad := NewRadiation(width)
 	rad.Parse(r)
 	fmt.Println(rad.Gamma() * rad.Epsilon())
