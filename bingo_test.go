@@ -9,15 +9,19 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-
-	"github.com/gregoryv/nexus"
 )
 
 func Test(t *testing.T) {
 	r, _ := os.Open("testdata/4.given")
 	g := ParseGame(r)
 
-	t.Error(g.Dump())
+	for g.PlayNextMove() {
+		board := g.Winner()
+		if board != nil {
+			t.Fatal(g.Dump())
+		}
+	}
+
 }
 
 func ParseGame(r io.Reader) *Game {
@@ -40,10 +44,9 @@ func ParseGame(r io.Reader) *Game {
 		g.boards = append(g.boards, board)
 	}
 
-	for _, move := range moves[:5] {
+	for _, move := range moves {
 		v, _ := strconv.Atoi(move)
 		g.moves = append(g.moves, v)
-		g.Check(v)
 	}
 
 	return g
@@ -57,7 +60,9 @@ func NewGame() *Game {
 }
 
 type Game struct {
-	moves  []int
+	moves []int
+	move  int // current move
+
 	boards []*Board
 }
 
@@ -83,54 +88,21 @@ func (me *Game) Check(v int) {
 	}
 }
 
-func NewBoard() *Board {
-	return &Board{
-		values: make([]int, 0),
-		width:  5 * 5,
-		rows:   5,
-		cols:   5,
+func (me *Game) PlayNextMove() bool {
+	me.Check(me.moves[me.move])
+	if me.move < len(me.moves)-1 {
+		// there are more moves
+		me.move += 1
+		return true
 	}
+	return false
 }
 
-type Board struct {
-	values []int
-
-	checked Bits
-
-	width, rows, cols int
-}
-
-func (me *Board) Check(v int) {
-	for i, p := range me.values {
-		if p == v {
-			var flag Bits = 1 << (me.width - i - 1)
-			me.checked = Set(me.checked, flag)
+func (me *Game) Winner() *Board {
+	for _, board := range me.boards {
+		if board.HasWon() {
+			return board
 		}
 	}
+	return nil
 }
-
-func (me *Board) IsChecked(i int) bool {
-	var flag Bits = 1 << (me.width - i - 1)
-	return Has(me.checked, flag)
-}
-
-func (me *Board) WriteTo(w io.Writer) (int64, error) {
-	p, err := nexus.NewPrinter(w)
-	for row := 0; row < me.rows; row++ {
-		for cell := 0; cell < me.cols; cell++ {
-			i := row*me.rows + cell
-			if !me.IsChecked(i) {
-				p.Printf("%2v ", me.values[i])
-			} else {
-				p.Printf("%s%2v%s ", RED, me.values[i], NOCOLOR)
-			}
-		}
-		p.Println()
-	}
-	return p.Written, *err
-}
-
-const (
-	RED     = "\033[0;31m"
-	NOCOLOR = "\033[0m"
-)
