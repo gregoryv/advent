@@ -77,8 +77,9 @@ func NewGame() *Game {
 }
 
 type Game struct {
-	moves []int
-	move  int // current move
+	moves   []int
+	move    int // current move
+	lastNum int
 
 	boards []*Board
 
@@ -111,8 +112,8 @@ func (me *Game) Check(v int) {
 }
 
 func (me *Game) PlayNextMove() bool {
-
 	num := me.moves[me.move]
+	me.lastNum = num
 	log.Println("num:", num)
 	me.Check(num)
 	if me.move < len(me.moves)-1 {
@@ -130,6 +131,14 @@ func (me *Game) Winner() *Board {
 		}
 	}
 	return nil
+}
+
+func (me *Game) Score() int {
+	board := me.Winner()
+	if board == nil {
+		return -1
+	}
+	return me.lastNum * board.SumUnchecked()
 }
 
 func (me *Game) HasWon(b *Board) bool {
