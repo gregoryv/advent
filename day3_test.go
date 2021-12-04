@@ -46,6 +46,6 @@ func LifeSupportRating(filename string, width int) {
 func LifeSupportRatingTo(w io.Writer, r io.Reader, width int) {
 	rating := NewRating(width)
 	rating.Parse(r)
-	rating.debug = true
-	fmt.Fprint(w, rating.Oxygen())
+	//	rating.debug = true
+	fmt.Fprint(w, rating.Oxygen()*rating.CO2Scrub())
 }

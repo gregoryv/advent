@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 )
 
@@ -49,24 +50,6 @@ func (me *Rating) Oxygen() Bits {
 	return b
 }
 
-func (me *Rating) filter(match matchFunc, last, in NBits, width, i int) Bits {
-	if i == width {
-		if len(in) == 1 {
-			return in[0]
-		}
-		return last[0] // todo perhaps
-	}
-	if me.debug {
-		fmt.Println(in.Dump(width))
-	}
-	//
-	rad := NewRadiation(width)
-	rad.Load(in)
-	rest := Keep(in, match(rad, width, i))
-
-	return me.filter(match, in, rest, width, i+1)
-}
-
 func (me *Rating) oxygenRating(rad *Radiation, width, i int) func(Bits) bool {
 	if me.debug {
 		k := 1
@@ -85,6 +68,56 @@ func (me *Rating) oxygenRating(rad *Radiation, width, i int) func(Bits) bool {
 		}
 		return false
 	}
+}
+
+func (me *Rating) CO2Scrub() Bits {
+	b := me.filter(me.co2scrub, me.nb, me.nb, me.width, 0)
+	if me.debug {
+		fmt.Println(b.Dump(me.width), "co2")
+	}
+	return b
+}
+
+func (me *Rating) co2scrub(rad *Radiation, width, i int) func(Bits) bool {
+	if me.debug {
+		k := 0
+		if rad.one[i] < rad.zero[i] {
+			k = 1
+		}
+		fmt.Printf("%s%v\n", strings.Repeat(" ", i), k)
+	}
+	var flag Bits = 1 << (width - i - 1)
+	return func(b Bits) bool {
+		if rad.one[i] < rad.zero[i] && Has(b, flag) {
+			return true
+		}
+		if rad.one[i] >= rad.zero[i] && !Has(b, flag) {
+			return true
+		}
+		return false
+	}
+}
+
+func (me *Rating) filter(match matchFunc, last, in NBits, width, i int) Bits {
+	if len(in) == 1 {
+		return in[0]
+	}
+	if len(last) == 0 {
+		return 0
+	}
+	if i == width {
+		log.Println("stopped")
+		return 0
+	}
+	if me.debug {
+		fmt.Println(in.Dump(width))
+	}
+	//
+	rad := NewRadiation(width)
+	rad.Load(in)
+	rest := Keep(in, match(rad, width, i))
+
+	return me.filter(match, in, rest, width, i+1)
 }
 
 type matchFunc func(rad *Radiation, width, i int) func(Bits) bool
