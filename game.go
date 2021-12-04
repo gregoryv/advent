@@ -13,6 +13,7 @@ import (
 	"github.com/gregoryv/nexus"
 )
 
+// Winner writes score of first winning board to stdout
 func Winner(filename string) {
 	fh, err := os.Open(filename)
 	if err != nil {
@@ -29,6 +30,7 @@ func Winner(filename string) {
 	fmt.Fprintln(os.Stdout, g.Score())
 }
 
+// Looser writes score of last winning board to stdout
 func Looser(filename string) {
 	fh, err := os.Open(filename)
 	if err != nil {
