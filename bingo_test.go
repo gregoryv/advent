@@ -5,17 +5,19 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
 )
 
-func Test(t *testing.T) {
+func xTest(t *testing.T) {
 	r, _ := os.Open("testdata/4.given")
 	g := ParseGame(r)
 
-	for g.PlayNextMove() {
+	for {
+		g.PlayNextMove()
 		board := g.Winner()
 		if board != nil {
 			t.Fatal(g.Dump())
@@ -89,7 +91,10 @@ func (me *Game) Check(v int) {
 }
 
 func (me *Game) PlayNextMove() bool {
-	me.Check(me.moves[me.move])
+
+	num := me.moves[me.move]
+	log.Println("num:", num)
+	me.Check(num)
 	if me.move < len(me.moves)-1 {
 		// there are more moves
 		me.move += 1

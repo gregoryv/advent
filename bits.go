@@ -66,7 +66,16 @@ func (b Bits) Dump(width int) string {
 	return fmt.Sprintf(format, b)
 }
 
+// SetIndex from right
+func SetIndex(b Bits, v ...uint8) Bits {
+	for _, v := range v {
+		b = Set(b, (1 << v))
+	}
+	return b
+}
+
 func Set(b, flag Bits) Bits    { return b | flag }
 func Clear(b, flag Bits) Bits  { return b &^ flag }
 func Toggle(b, flag Bits) Bits { return b ^ flag }
 func Has(b, flag Bits) bool    { return b&flag != 0 }
+func Match(b, flag Bits) bool  { return b&flag == flag }

@@ -1,7 +1,9 @@
 package advent
 
 import (
+	"bytes"
 	"io"
+	"strings"
 
 	"github.com/gregoryv/nexus"
 )
@@ -15,7 +17,14 @@ func NewBoard() *Board {
 		rows:   rows,
 		cols:   cols,
 	}
-	// init winning rows
+	// default to values 1 .. width
+	for r := 0; r < rows; r++ {
+		for c := 0; c < cols; c++ {
+			i := r*rows + c
+			b.values = append(b.values, i+1)
+		}
+	}
+	// init winning rows , todo move to game as these are game rules
 
 	// horizontal
 	for r := 0; r < rows; r++ {
@@ -60,11 +69,13 @@ func (me *Board) HasWon() bool {
 	return false
 }
 
-func (me *Board) Check(v int) {
-	for i, p := range me.values {
-		if p == v {
-			var flag Bits = 1 << (me.width - i - 1)
-			me.checked = Set(me.checked, flag)
+func (me *Board) Check(v ...int) {
+	for _, v := range v {
+		for i, p := range me.values {
+			if p == v {
+				var flag Bits = 1 << (me.width - i - 1)
+				me.checked = Set(me.checked, flag)
+			}
 		}
 	}
 }
@@ -74,9 +85,22 @@ func (me *Board) IsChecked(i int) bool {
 	return Has(me.checked, flag)
 }
 
+func (me *Board) Match(flag Bits) bool {
+	return Match(me.checked, flag)
+}
+
+func (me *Board) Dump() string {
+	var buf bytes.Buffer
+	me.WriteTo(&buf)
+	return buf.String()
+}
+
 func (me *Board) WriteTo(w io.Writer) (int64, error) {
 	p, err := nexus.NewPrinter(w)
+	indent := strings.Repeat(" ", 20)
+	p.Println(me.checked.Dump(me.width))
 	for row := 0; row < me.rows; row++ {
+		p.Print(indent)
 		for cell := 0; cell < me.cols; cell++ {
 			i := row*me.rows + cell
 			if !me.IsChecked(i) {
