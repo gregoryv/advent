@@ -21,28 +21,124 @@ func Example_CalcRadiation() {
 	// output:
 	// 198
 	// 3009600
+	// 230
+	// ?
 }
+
+// ----------------------------------------
 
 func LifeSupportRating(filename string, width int) {
-	r, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
+	data, _ := ioutil.ReadFile(filename)
+	LifeSupportRatingTo(os.Stdout, bytes.NewReader(data), width)
+}
+
+func LifeSupportRatingTo(w io.Writer, r io.Reader, width int) {
+	rating := NewRating(width)
+	rating.Parse(r)
+	fmt.Fprintln(w, rating.LifeSupport())
+}
+
+func NewRating(width int) *Rating {
+	return &Rating{
+		width: width,
+		data:  make([][]byte, 0),
 	}
-	defer r.Close()
-	lifeSupportRating(os.Stdout, r, width)
-}
-
-func lifeSupportRating(w io.Writer, r io.Reader, width int) {
-
-}
-
-func NewRating() *Rating {
-	return &Rating{}
 }
 
 type Rating struct {
-	oxygen    []byte
-	scrubbing []byte
+	width    int
+	data     [][]byte
+	oxygen   []byte
+	co2scrub []byte
+}
+
+func (me *Rating) Parse(r io.Reader) {
+	s := bufio.NewScanner(r)
+	for s.Scan() {
+		me.Write(s.Bytes())
+	}
+	me.oxygen = me.filter(me.data, findOxygen, 0)
+	me.co2scrub = me.filter(me.data, findCO2scrub, 0)
+}
+
+var last [][]byte
+
+func (me *Rating) filter(in [][]byte, keep keepFunc, i int) []byte {
+	if len(in) == 1 {
+		return in[0]
+	}
+	if len(in) == 0 || i == me.width { // probably all last where the same
+		return last[0]
+	}
+
+	last = in
+	k := keep(in, i)
+	rest := make([][]byte, 0)
+	for _, line := range in {
+		if line[i] == k {
+			rest = append(rest, line)
+		}
+	}
+
+	return me.filter(rest, keep, i+1)
+}
+
+func findOxygen(in [][]byte, i int) byte {
+	width := len(in[0])
+	rad := NewRadiation(width)
+	rad.Load(in)
+	if i >= width {
+		log.Fatal(dump(in))
+	}
+	if rad.one[i] >= rad.zero[i] {
+		return '1'
+	}
+	return '0'
+
+}
+
+func findCO2scrub(in [][]byte, i int) byte {
+	width := len(in[0])
+	rad := NewRadiation(width)
+	rad.Load(in)
+
+	if rad.one[i] < rad.zero[i] {
+		return '1'
+	}
+	return '0'
+}
+
+type keepFunc func([][]byte, int) byte
+
+func (me *Rating) Write(p []byte) (int, error) {
+	if len(p) == 0 { // skip empty
+		return 0, nil
+	}
+	me.data = append(me.data, p)
+	return len(p), nil
+}
+
+func (me *Rating) Oxygen() int64 {
+	v, _ := strconv.ParseInt(string(me.oxygen), 2, 64)
+	return v
+}
+
+func (me *Rating) CO2scrub() int64 {
+	v, _ := strconv.ParseInt(string(me.co2scrub), 2, 64)
+	return v
+}
+
+func (me *Rating) LifeSupport() int64 {
+	return me.Oxygen() * me.CO2scrub()
+}
+
+func dump(in [][]byte) string {
+	var buf bytes.Buffer
+	for _, word := range in {
+		buf.Write(word)
+		buf.WriteString("\n")
+	}
+	return buf.String()
 }
 
 // ----------------------------------------
@@ -83,10 +179,18 @@ func (me *Radiation) Parse(r io.Reader) {
 	}
 }
 
+func (me *Radiation) Load(data [][]byte) {
+	for _, line := range data {
+		me.Write(line)
+	}
+}
+
+// p must be exact width
 func (me *Radiation) Write(p []byte) (int, error) {
 	if len(p) == 0 { // skip empty
 		return 0, nil
 	}
+
 	for i := 0; i < len(me.gamma); i++ {
 		if p[i] == '1' {
 			me.one[i]++
