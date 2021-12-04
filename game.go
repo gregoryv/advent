@@ -3,15 +3,17 @@ package advent
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/gregoryv/nexus"
 )
 
 func ParseGame(r io.Reader) *Game {
 	g := NewGame()
+	g.boards = make([]*Board, 0) // reset
 	s := bufio.NewScanner(r)
 	s.Scan()
 
@@ -51,6 +53,7 @@ func NewGame() *Game {
 		cols  = b.cols
 		width = b.width
 	)
+	g.boards = append(g.boards, b)
 	// horizontal
 	for r := 0; r < rows; r++ {
 		var row Bits
@@ -65,7 +68,7 @@ func NewGame() *Game {
 	for r := 0; r < rows; r++ {
 		var row Bits
 		for c := 0; c < cols; c++ {
-			i := c * rows
+			i := c*rows + r
 			row = Set(row, 1<<(width-i-1))
 		}
 		g.winflags = append(g.winflags, row)
@@ -88,19 +91,24 @@ type Game struct {
 
 func (me *Game) Dump() string {
 	var buf bytes.Buffer
+	p, _ := nexus.NewPrinter(&buf)
 	for i, move := range me.moves {
 		if i > 0 {
-			buf.WriteString(",")
+			p.Print(",")
 		}
-		buf.WriteString(fmt.Sprintf("%v", move))
+		p.Printf("%v", move)
 	}
-	buf.WriteString("\n\n")
+	p.Print("\n\n")
 	for _, board := range me.boards {
 		if me.HasWon(board) {
-			buf.WriteString("WINNER\n")
+			p.Println("WINNER")
 		}
 		board.WriteTo(&buf)
-		buf.WriteString("\n")
+		p.Println()
+	}
+
+	for _, row := range me.winflags {
+		p.Println(row.Dump(me.boards[0].width))
 	}
 	return buf.String()
 }
@@ -138,6 +146,7 @@ func (me *Game) Score() int {
 	if board == nil {
 		return -1
 	}
+	log.Println(me.lastNum, board.SumUnchecked())
 	return me.lastNum * board.SumUnchecked()
 }
 

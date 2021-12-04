@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-func Test(t *testing.T) {
-	r, _ := os.Open("testdata/4.given")
+func TestGame_PlayNextMove(t *testing.T) {
+	r, _ := os.Open("testdata/4.input")
 	g := ParseGame(r)
 
 	for g.PlayNextMove() {
@@ -16,8 +16,17 @@ func Test(t *testing.T) {
 		}
 	}
 	got := g.Score()
-	exp := 4512
+	exp := 16716
 	if got != exp {
 		t.Errorf("got %v, expected %v", got, exp)
+		//		t.Error(g.Dump())
+	}
+}
+
+func TestGame_Rules(t *testing.T) {
+	g := NewGame()
+
+	if false {
+		t.Error(g.Dump())
 	}
 }
