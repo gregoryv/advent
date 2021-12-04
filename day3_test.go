@@ -67,8 +67,13 @@ func (me *Radiation) Write(p []byte) (int, error) {
 		return 0, nil
 	}
 
-	for i := 0; i < len(me.gamma); i++ {
-		if p[i] == '1' {
+	b := ParseBitsBytes(p)
+
+	width := len(me.gamma)
+	for i := 0; i < width; i++ {
+		var flag Bits = 1 << (width - i - 1)
+
+		if Has(b, flag) {
 			me.one[i]++
 		} else {
 			me.zero[i]++
