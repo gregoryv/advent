@@ -34,8 +34,8 @@ func Example_LifeSupport_given() {
 	LifeSupportRating("testdata/3.given", 5) // output: 230
 }
 
-func xExample_LifeSupport_input() {
-	LifeSupportRating("testdata/3.input", 12) // output: ?
+func Example_LifeSupport_input() {
+	LifeSupportRating("testdata/3.input", 12) // output: 6940518
 }
 
 func LifeSupportRating(filename string, width int) {
