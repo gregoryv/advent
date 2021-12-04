@@ -2,17 +2,28 @@ package advent
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 	"testing"
 )
 
+func TestNBits(t *testing.T) {
+	t.Run("Write", func(t *testing.T) {
+		nb := make(NBits, 0)
+		nb.Write([]byte("101"))
+		nb.Write([]byte("010"))
+		nb.Write([]byte("001"))
+
+		if len(nb) != 3 {
+			t.Fail()
+		}
+		if nb[1] != F1 {
+			t.Errorf("%03b", nb[1])
+		}
+	})
+}
+
+// ----------------------------------------
+
 func TestBits(t *testing.T) {
-	const (
-		F0 Bits = 1 << iota
-		F1
-		F2
-	)
 	t.Run("ParseBits", func(t *testing.T) {
 		b := ParseBits("0101")
 		got := fmt.Sprintf("%03b", b)
@@ -63,18 +74,8 @@ func TestBits(t *testing.T) {
 	})
 }
 
-func ParseBits(s string) Bits {
-	v, err := strconv.ParseInt(s, 2, 64)
-	if err != nil {
-		fmt.Fprint(os.Stderr, err)
-		os.Exit(1)
-	}
-	return Bits(v)
-}
-
-type Bits int64
-
-func Set(b, flag Bits) Bits    { return b | flag }
-func Clear(b, flag Bits) Bits  { return b &^ flag }
-func Toggle(b, flag Bits) Bits { return b ^ flag }
-func Has(b, flag Bits) bool    { return b&flag != 0 }
+const (
+	F0 Bits = 1 << iota
+	F1
+	F2
+)
