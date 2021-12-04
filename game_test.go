@@ -47,7 +47,7 @@ func TestGame_LastBoard(t *testing.T) {
 	}
 
 	got := lastnum * lastwin.SumUnchecked()
-	exp := 16716
+	exp := 4880
 	if got != exp {
 		t.Errorf("got %v, expected %v", got, exp)
 		//		t.Error(g.Dump())

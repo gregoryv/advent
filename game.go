@@ -3,13 +3,54 @@ package advent
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 
 	"github.com/gregoryv/nexus"
 )
+
+func Winner(filename string) {
+	fh, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fh.Close()
+	g := ParseGame(fh)
+	for g.PlayNextMove() {
+		board := g.Winner()
+		if board != nil {
+			break
+		}
+	}
+	fmt.Fprintln(os.Stdout, g.Score())
+}
+
+func Looser(filename string) {
+	fh, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fh.Close()
+	g := ParseGame(fh)
+
+	var lastwin *Board
+	var lastnum int
+	for g.PlayNextMove() {
+		board := g.Winner()
+		if board != nil {
+			g.RemoveWinners()
+			lastwin = board
+			lastnum = g.lastNum
+		}
+	}
+
+	got := lastnum * lastwin.SumUnchecked()
+	fmt.Fprintln(os.Stdout, got)
+}
 
 func ParseGame(r io.Reader) *Game {
 	g := NewGame()
@@ -122,7 +163,6 @@ func (me *Game) Check(v int) {
 func (me *Game) PlayNextMove() bool {
 	num := me.moves[me.move]
 	me.lastNum = num
-	log.Println("num:", num)
 	me.Check(num)
 	if me.move < len(me.moves)-1 {
 		// there are more moves
@@ -145,7 +185,6 @@ func (me *Game) RemoveWinners() {
 	for i := 0; i < len(me.boards); i++ {
 		if me.HasWon(me.boards[i]) {
 			me.boards = append(me.boards[:i], me.boards[i+1:]...)
-			log.Println("removed board at", i)
 		}
 	}
 }

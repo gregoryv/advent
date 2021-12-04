@@ -1,5 +1,15 @@
 package advent
 
+func Example_Day4() {
+	Winner("testdata/4.given")
+	Winner("testdata/4.input")
+	Looser("testdata/4.input")
+	// output:
+	// 4512
+	// 16716
+	// 4880
+}
+
 func Example_Day3() {
 	PowerCons("testdata/3.given", 5)
 	PowerCons("testdata/3.input", 12)
