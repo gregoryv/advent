@@ -2,6 +2,8 @@ package advent
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"testing"
 )
 
@@ -11,6 +13,15 @@ func TestBits(t *testing.T) {
 		F1
 		F2
 	)
+	t.Run("ParseBits", func(t *testing.T) {
+		b := ParseBits("0101")
+		got := fmt.Sprintf("%03b", b)
+		exp := "101"
+		if got != exp {
+			t.Errorf("got %s, expected %s", got, exp)
+		}
+	})
+
 	t.Run("Set", func(t *testing.T) {
 		b := Set(Set(0, F0), F2)
 		got := fmt.Sprintf("%03b", b)
@@ -50,6 +61,15 @@ func TestBits(t *testing.T) {
 			t.Errorf("got %s, expected %s", got, exp)
 		}
 	})
+}
+
+func ParseBits(s string) Bits {
+	v, err := strconv.ParseInt(s, 2, 64)
+	if err != nil {
+		fmt.Fprint(os.Stderr, err)
+		os.Exit(1)
+	}
+	return Bits(v)
 }
 
 type Bits int64
