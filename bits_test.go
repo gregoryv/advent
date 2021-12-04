@@ -7,6 +7,25 @@ import (
 )
 
 func TestNBits(t *testing.T) {
+	t.Run("FilterNBits", func(t *testing.T) {
+		r := strings.NewReader("101\n010\n001")
+		nb := ParseNBits(r)
+		match := func(b Bits) bool {
+			return Has(b, F0)
+		}
+		nb = Keep(nb, match)
+		if len(nb) != 2 {
+			t.Error(nb.Dump(3))
+		}
+		got := nb.Dump(3)
+		exp := "101\n001\n"
+		if got != exp {
+			t.Log(got)
+			t.Log(exp)
+			t.Fail()
+		}
+	})
+
 	t.Run("ParseNBits", func(t *testing.T) {
 		r := strings.NewReader("101\n010\n001") // without trailing newline
 		nb := ParseNBits(r)

@@ -2,11 +2,22 @@ package advent
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"os"
 	"strconv"
 )
+
+func Keep(nb NBits, match func(Bits) bool) NBits {
+	out := make(NBits, 0)
+	for _, b := range nb {
+		if match(b) {
+			out = append(out, b)
+		}
+	}
+	return out
+}
 
 // Expects binary numbers, one on each line
 func ParseNBits(r io.Reader) NBits {
@@ -24,6 +35,15 @@ func (me *NBits) Write(p []byte) (int, error) {
 	b := ParseBitsBytes(p)
 	*me = append(*me, b)
 	return len(p), nil
+}
+
+func (me *NBits) Dump(width int) string {
+	var buf bytes.Buffer
+	format := fmt.Sprintf("%%0%vb\n", width)
+	for _, b := range *me {
+		fmt.Fprintf(&buf, format, b)
+	}
+	return buf.String()
 }
 
 func ParseBitsBytes(p []byte) Bits {
