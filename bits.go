@@ -61,6 +61,11 @@ func ParseBits(s string) Bits {
 
 type Bits int64
 
+func (b Bits) Dump(width int) string {
+	format := fmt.Sprintf("%%0%vb", width)
+	return fmt.Sprintf(format, b)
+}
+
 func Set(b, flag Bits) Bits    { return b | flag }
 func Clear(b, flag Bits) Bits  { return b &^ flag }
 func Toggle(b, flag Bits) Bits { return b ^ flag }
