@@ -65,7 +65,7 @@ func NewGame() *Game {
 	for r := 0; r < rows; r++ {
 		var row Bits
 		for c := 0; c < cols; c++ {
-			i := r * rows
+			i := c * rows
 			row = Set(row, 1<<(width-i-1))
 		}
 		g.winflags = append(g.winflags, row)
@@ -95,6 +95,9 @@ func (me *Game) Dump() string {
 	}
 	buf.WriteString("\n\n")
 	for _, board := range me.boards {
+		if me.HasWon(board) {
+			buf.WriteString("WINNER\n")
+		}
 		board.WriteTo(&buf)
 		buf.WriteString("\n")
 	}
@@ -122,11 +125,18 @@ func (me *Game) PlayNextMove() bool {
 
 func (me *Game) Winner() *Board {
 	for _, board := range me.boards {
-		for _, row := range me.winflags {
-			if board.Match(row) {
-				return board
-			}
+		if me.HasWon(board) {
+			return board
 		}
 	}
 	return nil
+}
+
+func (me *Game) HasWon(b *Board) bool {
+	for _, row := range me.winflags {
+		if b.Match(row) {
+			return true
+		}
+	}
+	return false
 }
