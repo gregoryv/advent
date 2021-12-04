@@ -48,6 +48,16 @@ func (me *Board) Check(v ...int) {
 	}
 }
 
+func (me *Board) SumUnchecked() int {
+	var sum int
+	for i := 0; i < me.width; i++ {
+		if !me.IsChecked(i) {
+			sum += me.values[i]
+		}
+	}
+	return sum
+}
+
 func (me *Board) IsChecked(i int) bool {
 	var flag Bits = 1 << (me.width - i - 1)
 	return Has(me.checked, flag)

@@ -18,4 +18,11 @@ func TestBoard_Match(t *testing.T) {
 	if !b.Match(row) {
 		t.Fail()
 	}
+
+	b.Check(10)
+	got := b.SumUnchecked()
+	exp := 300
+	if got != exp {
+		t.Errorf("got %v, expected %v", got, exp)
+	}
 }
