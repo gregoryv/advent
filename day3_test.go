@@ -1,12 +1,10 @@
 package advent
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -27,85 +25,4 @@ func PowerConsTo(w io.Writer, r io.Reader, width int) {
 	rad := NewRadiation(width)
 	rad.Parse(r)
 	fmt.Println(rad.Gamma() * rad.Epsilon())
-}
-
-func NewRadiation(width int) *Radiation {
-	return &Radiation{
-		width: width,
-
-		one:  make([]int, width),
-		zero: make([]int, width),
-	}
-}
-
-type Radiation struct {
-	width int
-
-	one  []int
-	zero []int
-
-	gamma   Bits
-	epsilon Bits
-}
-
-func (me *Radiation) Parse(r io.Reader) {
-	s := bufio.NewScanner(r)
-	for s.Scan() {
-		me.Write(s.Bytes())
-	}
-}
-
-func (me *Radiation) Load(data [][]byte) {
-	for _, line := range data {
-		me.Write(line)
-	}
-}
-
-// p must be exact width
-func (me *Radiation) Write(p []byte) (int, error) {
-	if len(p) == 0 { // skip empty
-		return 0, nil
-	}
-	b := ParseBitsBytes(p)
-
-	for i := 0; i < me.width; i++ {
-		var flag Bits = 1 << (me.width - i - 1)
-		if Has(b, flag) {
-			me.one[i]++
-		} else {
-			me.zero[i]++
-		}
-	}
-	return len(p), nil
-}
-
-func (me *Radiation) Update() {
-
-	for i := 0; i < me.width; i++ {
-		var flag Bits = 1 << (me.width - i - 1)
-		if me.one[i] > me.zero[i] {
-			me.gamma = Set(me.gamma, flag)
-		} else {
-			me.epsilon = Set(me.epsilon, flag)
-		}
-	}
-}
-
-func (me *Radiation) Gamma() int64 {
-	me.Update()
-	return int64(me.gamma)
-}
-func (me *Radiation) Epsilon() int64 {
-	me.Update()
-	return int64(me.epsilon)
-}
-
-// ----------------------------------------
-
-func loadLines(r io.Reader) [][]byte {
-	data, err := io.ReadAll(r)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return bytes.Split(data, []byte("\n"))
 }
