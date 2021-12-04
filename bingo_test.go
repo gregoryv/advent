@@ -16,6 +16,7 @@ import (
 func Test(t *testing.T) {
 	r, _ := os.Open("testdata/4.given")
 	g := ParseGame(r)
+
 	t.Error(g.Dump())
 }
 
@@ -25,24 +26,24 @@ func ParseGame(r io.Reader) *Game {
 	s.Scan()
 
 	moves := strings.Split(s.Text(), ",")
-	for _, move := range moves {
-		v, _ := strconv.Atoi(move)
-		g.moves = append(g.moves, v)
-	}
 
 	for s.Scan() {
 		board := NewBoard()
 		for i := 0; i < 5; i++ {
-			row := make([]int, 5)
 			s.Scan()
 			cells := strings.Fields(s.Text())
-			for i, str := range cells {
+			for _, str := range cells {
 				v, _ := strconv.Atoi(str)
-				row[i] = v
+				board.values = append(board.values, v)
 			}
-			board.values = append(board.values, row)
 		}
 		g.boards = append(g.boards, board)
+	}
+
+	for _, move := range moves[:5] {
+		v, _ := strconv.Atoi(move)
+		g.moves = append(g.moves, v)
+		g.Check(v)
 	}
 
 	return g
@@ -76,21 +77,53 @@ func (me *Game) Dump() string {
 	return buf.String()
 }
 
+func (me *Game) Check(v int) {
+	for _, board := range me.boards {
+		board.Check(v)
+	}
+}
+
 func NewBoard() *Board {
 	return &Board{
-		values: make([][]int, 0),
+		values: make([]int, 0),
+		width:  5 * 5,
+		rows:   5,
+		cols:   5,
 	}
 }
 
 type Board struct {
-	values [][]int
+	values []int
+
+	checked Bits
+
+	width, rows, cols int
 }
 
-func (me Board) WriteTo(w io.Writer) (int64, error) {
+func (me *Board) Check(v int) {
+	for i, p := range me.values {
+		if p == v {
+			var flag Bits = 1 << (me.width - i - 1)
+			me.checked = Set(me.checked, flag)
+		}
+	}
+}
+
+func (me *Board) IsChecked(i int) bool {
+	var flag Bits = 1 << (me.width - i - 1)
+	return Has(me.checked, flag)
+}
+
+func (me *Board) WriteTo(w io.Writer) (int64, error) {
 	p, err := nexus.NewPrinter(w)
-	for _, row := range me.values {
-		for _, cell := range row {
-			p.Printf("%2v ", cell)
+	for row := 0; row < me.rows; row++ {
+		for cell := 0; cell < me.cols; cell++ {
+			i := row*me.rows + cell
+			if !me.IsChecked(i) {
+				p.Printf(" %2v  ", me.values[i])
+			} else {
+				p.Printf("[%2v] ", me.values[i])
+			}
 		}
 		p.Println()
 	}
