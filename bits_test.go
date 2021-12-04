@@ -2,10 +2,22 @@ package advent
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
 func TestNBits(t *testing.T) {
+	t.Run("ParseNBits", func(t *testing.T) {
+		r := strings.NewReader("101\n010\n001") // without trailing newline
+		nb := ParseNBits(r)
+		if len(nb) != 3 {
+			t.Error("len:", len(nb))
+		}
+		if nb[1] != F1 {
+			t.Errorf("%03b", nb[1])
+		}
+	})
+
 	t.Run("Write", func(t *testing.T) {
 		nb := make(NBits, 0)
 		nb.Write([]byte("101"))

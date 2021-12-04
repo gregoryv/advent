@@ -1,10 +1,22 @@
 package advent
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 )
+
+// Expects binary numbers, one on each line
+func ParseNBits(r io.Reader) NBits {
+	s := bufio.NewScanner(r)
+	nb := make(NBits, 0)
+	for s.Scan() {
+		nb.Write(s.Bytes())
+	}
+	return nb
+}
 
 type NBits []Bits
 
