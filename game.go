@@ -6,25 +6,9 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
 	"strconv"
 	"strings"
-	"testing"
 )
-
-func xTest(t *testing.T) {
-	r, _ := os.Open("testdata/4.given")
-	g := ParseGame(r)
-
-	for {
-		g.PlayNextMove()
-		board := g.Winner()
-		if board != nil {
-			t.Fatal(g.Dump())
-		}
-	}
-
-}
 
 func ParseGame(r io.Reader) *Game {
 	g := NewGame()
@@ -34,16 +18,17 @@ func ParseGame(r io.Reader) *Game {
 	moves := strings.Split(s.Text(), ",")
 
 	for s.Scan() {
-		board := NewBoard()
-		for i := 0; i < 5; i++ {
+		b := NewBoard()
+		for r := 0; r < b.rows; r++ {
 			s.Scan()
 			cells := strings.Fields(s.Text())
-			for _, str := range cells {
-				v, _ := strconv.Atoi(str)
-				board.values = append(board.values, v)
+			for c := 0; c < b.cols; c++ {
+				i := r*b.rows + c
+				v, _ := strconv.Atoi(cells[c])
+				b.values[i] = v
 			}
 		}
-		g.boards = append(g.boards, board)
+		g.boards = append(g.boards, b)
 	}
 
 	for _, move := range moves {
@@ -55,10 +40,40 @@ func ParseGame(r io.Reader) *Game {
 }
 
 func NewGame() *Game {
-	return &Game{
+	g := &Game{
 		moves:  make([]int, 0),
 		boards: make([]*Board, 0),
 	}
+
+	var (
+		b     = NewBoard()
+		rows  = b.rows
+		cols  = b.cols
+		width = b.width
+	)
+	// horizontal
+	for r := 0; r < rows; r++ {
+		var row Bits
+		for c := 0; c < cols; c++ {
+			i := r*rows + c
+			row = Set(row, 1<<(width-i-1))
+		}
+		g.winflags = append(g.winflags, row)
+	}
+
+	// vertical
+	for r := 0; r < rows; r++ {
+		var row Bits
+		for c := 0; c < cols; c++ {
+			i := r * rows
+			row = Set(row, 1<<(width-i-1))
+		}
+		g.winflags = append(g.winflags, row)
+	}
+
+	// diagonal don't count
+
+	return g
 }
 
 type Game struct {
@@ -66,6 +81,8 @@ type Game struct {
 	move  int // current move
 
 	boards []*Board
+
+	winflags []Bits // horizontal, vertical
 }
 
 func (me *Game) Dump() string {
@@ -105,8 +122,10 @@ func (me *Game) PlayNextMove() bool {
 
 func (me *Game) Winner() *Board {
 	for _, board := range me.boards {
-		if board.HasWon() {
-			return board
+		for _, row := range me.winflags {
+			if board.Match(row) {
+				return board
+			}
 		}
 	}
 	return nil

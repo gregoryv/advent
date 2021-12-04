@@ -26,27 +26,6 @@ func NewBoard() *Board {
 	}
 	// init winning rows , todo move to game as these are game rules
 
-	// horizontal
-	for r := 0; r < rows; r++ {
-		var row Bits
-		for c := 0; c < cols; c++ {
-			i := r*rows + c
-			row = Set(row, 1<<(width-i-1))
-		}
-		b.winflags = append(b.winflags, row)
-	}
-
-	// vertical
-	for r := 0; r < rows; r++ {
-		var row Bits
-		for c := 0; c < cols; c++ {
-			i := r * rows
-			row = Set(row, 1<<(width-i-1))
-		}
-		b.winflags = append(b.winflags, row)
-	}
-
-	// diagonal don't count
 	return b
 }
 
@@ -56,17 +35,6 @@ type Board struct {
 	width   int // ie. rows*cols
 	rows    int
 	cols    int
-
-	winflags []Bits // horizontal, vertical
-}
-
-func (me *Board) HasWon() bool {
-	for _, flag := range me.winflags {
-		if Has(me.checked, flag) {
-			return true
-		}
-	}
-	return false
 }
 
 func (me *Board) Check(v ...int) {
