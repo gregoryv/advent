@@ -31,9 +31,9 @@ func (me *Radiation) Parse(r io.Reader) {
 	}
 }
 
-func (me *Radiation) Load(data [][]byte) {
-	for _, line := range data {
-		me.Write(line)
+func (me *Radiation) Load(nb NBits) {
+	for _, b := range nb {
+		me.WriteBits(b)
 	}
 }
 
@@ -43,7 +43,11 @@ func (me *Radiation) Write(p []byte) (int, error) {
 		return 0, nil
 	}
 	b := ParseBitsBytes(p)
+	me.WriteBits(b)
+	return len(p), nil
+}
 
+func (me *Radiation) WriteBits(b Bits) {
 	for i := 0; i < me.width; i++ {
 		var flag Bits = 1 << (me.width - i - 1)
 		if Has(b, flag) {
@@ -52,7 +56,6 @@ func (me *Radiation) Write(p []byte) (int, error) {
 			me.zero[i]++
 		}
 	}
-	return len(p), nil
 }
 
 func (me *Radiation) Gamma() int64 {
