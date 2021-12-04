@@ -2,11 +2,39 @@ package advent
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 )
+
+func PowerCons(filename string, width int) {
+	data, _ := ioutil.ReadFile(filename)
+	PowerConsTo(os.Stdout, bytes.NewReader(data), width)
+}
+
+func PowerConsTo(w io.Writer, r io.Reader, width int) {
+	rad := NewRadiation(width)
+	rad.Parse(r)
+	fmt.Println(rad.Gamma() * rad.Epsilon())
+}
+
+func LifeSupportRating(filename string, width int) {
+	data, _ := ioutil.ReadFile(filename)
+	LifeSupportRatingTo(os.Stdout, bytes.NewReader(data), width)
+}
+
+func LifeSupportRatingTo(w io.Writer, r io.Reader, width int) {
+	rating := NewRating(width)
+	rating.Parse(r)
+	//	rating.debug = true
+	fmt.Fprintln(w, rating.Oxygen()*rating.CO2Scrub())
+}
+
+// ----------------------------------------
 
 func NewRating(width int) *Rating {
 	return &Rating{

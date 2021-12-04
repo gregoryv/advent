@@ -11,18 +11,6 @@ import (
 	"strings"
 )
 
-func Example_Navigate() {
-	Navigate("testdata/2.given", WithoutAim)
-	Navigate("testdata/2.input", WithoutAim)
-	Navigate("testdata/2.given", WithAim)
-	Navigate("testdata/2.input", WithAim)
-	// output:
-	// 150
-	// 1580000
-	// 900
-	// 1251263225
-}
-
 func Navigate(filename string, calc func(*Position, string)) {
 	movements, _ := ioutil.ReadFile(filename)
 	NavigateTo(os.Stdout, bytes.NewReader(movements), calc)

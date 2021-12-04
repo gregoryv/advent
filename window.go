@@ -10,18 +10,6 @@ import (
 	"strings"
 )
 
-func Example_Increase() {
-	IncreasingWindow("testdata/1.given", 1)
-	IncreasingWindow("testdata/1.input", 1)
-	IncreasingWindow("testdata/1.given", 3)
-	IncreasingWindow("testdata/1.input", 3)
-	// output:
-	// 7
-	// 1288
-	// 5
-	// 1311
-}
-
 func IncreasingWindow(filename string, win int) {
 	in := loadInts(filename)
 	IncreasingWindowTo(os.Stdout, in, win)
