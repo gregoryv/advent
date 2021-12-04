@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strconv"
 )
 
 func Example_PowerCons() {
@@ -32,20 +31,21 @@ func PowerConsTo(w io.Writer, r io.Reader, width int) {
 
 func NewRadiation(width int) *Radiation {
 	return &Radiation{
+		width: width,
+
 		one:  make([]int, width),
 		zero: make([]int, width),
-
-		gamma:   bytes.Repeat([]byte("0"), width),
-		epsilon: bytes.Repeat([]byte("0"), width),
 	}
 }
 
 type Radiation struct {
+	width int
+
 	one  []int
 	zero []int
 
-	gamma   []byte
-	epsilon []byte
+	gamma   Bits
+	epsilon Bits
 }
 
 func (me *Radiation) Parse(r io.Reader) {
@@ -66,13 +66,10 @@ func (me *Radiation) Write(p []byte) (int, error) {
 	if len(p) == 0 { // skip empty
 		return 0, nil
 	}
-
 	b := ParseBitsBytes(p)
 
-	width := len(me.gamma)
-	for i := 0; i < width; i++ {
-		var flag Bits = 1 << (width - i - 1)
-
+	for i := 0; i < me.width; i++ {
+		var flag Bits = 1 << (me.width - i - 1)
 		if Has(b, flag) {
 			me.one[i]++
 		} else {
@@ -83,24 +80,24 @@ func (me *Radiation) Write(p []byte) (int, error) {
 }
 
 func (me *Radiation) Update() {
-	for i := 0; i < len(me.gamma); i++ {
+
+	for i := 0; i < me.width; i++ {
+		var flag Bits = 1 << (me.width - i - 1)
 		if me.one[i] > me.zero[i] {
-			me.gamma[i] = '1'
+			me.gamma = Set(me.gamma, flag)
 		} else {
-			me.epsilon[i] = '1'
+			me.epsilon = Set(me.epsilon, flag)
 		}
 	}
 }
 
 func (me *Radiation) Gamma() int64 {
 	me.Update()
-	v, _ := strconv.ParseInt(string(me.gamma), 2, 64)
-	return v
+	return int64(me.gamma)
 }
 func (me *Radiation) Epsilon() int64 {
 	me.Update()
-	v, _ := strconv.ParseInt(string(me.epsilon), 2, 64)
-	return v
+	return int64(me.epsilon)
 }
 
 // ----------------------------------------
