@@ -42,32 +42,29 @@ func (me *Rating) Dump() string {
 }
 
 func (me *Rating) Oxygen() Bits {
-	b := me.filter(me.nb, me.nb, me.width, 0)
+	b := me.filter(me.oxygenRating, me.nb, me.nb, me.width, 0)
 	if me.debug {
 		fmt.Println(b.Dump(me.width), "oxygen")
 	}
 	return b
 }
 
-func (me *Rating) filter(last, in NBits, width, i int) Bits {
+func (me *Rating) filter(match matchFunc, last, in NBits, width, i int) Bits {
 	if i == width {
 		if len(in) == 1 {
 			return in[0]
 		}
 		return last[0] // todo perhaps
 	}
-
 	if me.debug {
 		fmt.Println(in.Dump(width))
 	}
-
 	//
 	rad := NewRadiation(width)
 	rad.Load(in)
-	rest := Keep(in, me.oxygenRating(rad, width, i))
+	rest := Keep(in, match(rad, width, i))
 
-	return me.filter(in, rest, width, i+1)
-
+	return me.filter(match, in, rest, width, i+1)
 }
 
 func (me *Rating) oxygenRating(rad *Radiation, width, i int) func(Bits) bool {
@@ -89,3 +86,5 @@ func (me *Rating) oxygenRating(rad *Radiation, width, i int) func(Bits) bool {
 		return false
 	}
 }
+
+type matchFunc func(rad *Radiation, width, i int) func(Bits) bool
