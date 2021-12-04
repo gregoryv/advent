@@ -141,6 +141,15 @@ func (me *Game) Winner() *Board {
 	return nil
 }
 
+func (me *Game) RemoveWinners() {
+	for i := 0; i < len(me.boards); i++ {
+		if me.HasWon(me.boards[i]) {
+			me.boards = append(me.boards[:i], me.boards[i+1:]...)
+			log.Println("removed board at", i)
+		}
+	}
+}
+
 func (me *Game) Score() int {
 	board := me.Winner()
 	if board == nil {

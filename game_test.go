@@ -30,3 +30,26 @@ func TestGame_Rules(t *testing.T) {
 		t.Error(g.Dump())
 	}
 }
+
+func TestGame_LastBoard(t *testing.T) {
+	r, _ := os.Open("testdata/4.input")
+	g := ParseGame(r)
+
+	var lastwin *Board
+	var lastnum int
+	for g.PlayNextMove() {
+		board := g.Winner()
+		if board != nil {
+			g.RemoveWinners()
+			lastwin = board
+			lastnum = g.lastNum
+		}
+	}
+
+	got := lastnum * lastwin.SumUnchecked()
+	exp := 16716
+	if got != exp {
+		t.Errorf("got %v, expected %v", got, exp)
+		//		t.Error(g.Dump())
+	}
+}
