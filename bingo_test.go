@@ -120,12 +120,17 @@ func (me *Board) WriteTo(w io.Writer) (int64, error) {
 		for cell := 0; cell < me.cols; cell++ {
 			i := row*me.rows + cell
 			if !me.IsChecked(i) {
-				p.Printf(" %2v  ", me.values[i])
+				p.Printf("%2v ", me.values[i])
 			} else {
-				p.Printf("[%2v] ", me.values[i])
+				p.Printf("%s%2v%s ", RED, me.values[i], NOCOLOR)
 			}
 		}
 		p.Println()
 	}
 	return p.Written, *err
 }
+
+const (
+	RED     = "\033[0;31m"
+	NOCOLOR = "\033[0m"
+)
