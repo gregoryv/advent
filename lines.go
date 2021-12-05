@@ -126,7 +126,6 @@ func (l Line) Walk(fn func(p Pos)) {
 		fn(next)
 		prev = next
 	}
-	fn(l.to)
 }
 
 func (l Line) IsVertical() bool   { return l.from.y == l.to.y }

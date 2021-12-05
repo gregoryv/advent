@@ -2,10 +2,10 @@ package advent
 
 func Example_Day5() {
 	CountIntersections("testdata/5.given", 10, 10)
-	//CountIntersections("testdata/5.input", 1000, 1000)
+	CountIntersections("testdata/5.input", 1000, 1000)
 	// output:
 	// 5
-	// ?
+	// 6666
 }
 
 // ----------------------------------------

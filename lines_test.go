@@ -19,6 +19,7 @@ func xTestCountInteractions(t *testing.T) {
 	SetDebug(t)
 	defer SetDebug(nil)
 	CountIntersections("testdata/5.given", 10, 10)
+	t.Fail()
 }
 
 func TestPos_Next(t *testing.T) {
