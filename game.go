@@ -16,9 +16,8 @@ import (
 // Winner writes score of first winning board to stdout
 func Winner(filename string) {
 	fh, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
+	shouldNot(err)
+
 	defer fh.Close()
 	g := ParseGame(fh)
 	for g.PlayNextMove() {
@@ -33,9 +32,8 @@ func Winner(filename string) {
 // Looser writes score of last winning board to stdout
 func Looser(filename string) {
 	fh, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
+	shouldNot(err)
+
 	defer fh.Close()
 	g := ParseGame(fh)
 

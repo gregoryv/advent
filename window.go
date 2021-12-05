@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -43,9 +42,8 @@ func IncreasingWindowTo(w io.Writer, in []int, win int) {
 
 func loadInts(filename string) []int {
 	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
+	shouldNot(err)
+
 	lines := strings.Split(string(data), "\n")
 	in := make([]int, len(lines))
 	for i, line := range lines {
@@ -53,9 +51,7 @@ func loadInts(filename string) []int {
 			continue
 		}
 		in[i], err = strconv.Atoi(line)
-		if err != nil {
-			log.Fatal(err)
-		}
+		shouldNot(err)
 	}
 	return in
 }
