@@ -12,8 +12,14 @@ func shouldNot(err error) {
 // Used by shouldNot
 var fatalHandler func(...interface{}) = log.Fatal
 
+// SetDebug(nil) to reset
 func SetDebug(v logPrinter) {
-	debugOn = v == nil
+	if v == nil {
+		debugOn = false
+		debug = &discard{}
+		return
+	}
+	debugOn = true
 	debug = v
 }
 

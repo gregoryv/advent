@@ -70,7 +70,7 @@ func (me *Rating) Dump() string {
 func (me *Rating) Oxygen() Bits {
 	b := me.filter(me.oxygenRating, me.nb, me.nb, me.width, 0)
 	if debugOn {
-		fmt.Println(b.Dump(me.width), "oxygen")
+		debug.Log(b.Dump(me.width), "oxygen")
 	}
 	return b
 }
@@ -81,7 +81,7 @@ func (me *Rating) oxygenRating(rad *Radiation, width, i int) func(Bits) bool {
 		if rad.one[i] < rad.zero[i] {
 			k = 0
 		}
-		fmt.Printf("%s%v\n", strings.Repeat(" ", i), k)
+		debug.Logf("%s%v\n", strings.Repeat(" ", i), k)
 	}
 	var flag Bits = 1 << (width - i - 1)
 	return func(b Bits) bool {
