@@ -11,6 +11,12 @@ import (
 	"github.com/gregoryv/nexus"
 )
 
+func CountAllIntersections(filename string, x, y int) {
+	CountIntersections(filename, x, y, func(l Line) bool {
+		return true
+	})
+}
+
 func CountHVIntersections(filename string, x, y int) {
 	CountIntersections(filename, x, y, func(l Line) bool {
 		return l.IsHorizontal() || l.IsVertical()

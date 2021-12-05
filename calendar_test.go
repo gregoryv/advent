@@ -3,9 +3,13 @@ package advent
 func Example_Day5() {
 	CountHVIntersections("testdata/5.given", 10, 10)
 	CountHVIntersections("testdata/5.input", 1000, 1000)
+	CountAllIntersections("testdata/5.given", 10, 10)
+	CountAllIntersections("testdata/5.input", 1000, 1000)
 	// output:
 	// 5
 	// 6666
+	// 12
+	// 19081
 }
 
 // ----------------------------------------
