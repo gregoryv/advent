@@ -15,7 +15,12 @@ func CountIntersections(filename string) {
 }
 
 func CountIntersectionsTo(w io.Writer, r io.Reader) {
-	fmt.Fprintln(w, "todo")
+	g := NewGrid(1000, 1000)
+	lines := ParseLines(r)
+	for _, line := range lines {
+		g.Set(line)
+	}
+	fmt.Fprintln(w, g.IntersectCount())
 }
 
 // ParseLines parses new line separated
@@ -38,6 +43,16 @@ func ParseLine(v string) Line {
 	var l Line
 	fmt.Scanf("%v,%v -> %v,%v", &l.from.x, &l.from.y, &l.to.x, &l.to.y)
 	return l
+}
+
+func NewGrid(x, y int) *Grid {
+	g := &Grid{
+		grid: make([][]int, 0, y),
+	}
+	for i := 0; i < y; i++ {
+		g.grid = append(g.grid, make([]int, x))
+	}
+	return g
 }
 
 type Grid struct {
