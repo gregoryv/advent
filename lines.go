@@ -45,9 +45,16 @@ type Grid struct {
 }
 
 // Intersect returns true if lines 11 and l2 intersect
-func (me *Grid) IntersectCount() bool {
-	// todo find intersection, ie. find all cells in a grid with a count > 1
-	return false
+func (me *Grid) IntersectCount() int {
+	var count int
+	for y := 0; y < len(me.grid); y++ {
+		for x := 0; x < len(me.grid); x++ {
+			if me.grid[y][x] > 1 {
+				count++
+			}
+		}
+	}
+	return count
 }
 
 func (me *Grid) Set(l Line) {
