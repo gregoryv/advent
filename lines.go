@@ -2,25 +2,30 @@ package advent
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"os"
+	"strings"
+
+	"github.com/gregoryv/nexus"
 )
 
-func CountIntersections(filename string) {
+func CountIntersections(filename string, x, y int) {
 	fh, err := os.Open(filename)
 	shouldNot(err)
 	defer fh.Close()
-	CountIntersectionsTo(os.Stdout, fh)
+	CountIntersectionsTo(os.Stdout, fh, x, y)
 }
 
-func CountIntersectionsTo(w io.Writer, r io.Reader) {
-	g := NewGrid(1000, 1000)
+func CountIntersectionsTo(w io.Writer, r io.Reader, x, y int) {
+	g := NewGrid(x, y)
 	lines := ParseLines(r)
 	for _, line := range lines {
 		g.Set(line)
 	}
 	fmt.Fprintln(w, g.IntersectCount())
+	fmt.Print(g.Dump())
 }
 
 // ParseLines parses new line separated
@@ -40,8 +45,11 @@ func ParseLines(r io.Reader) []Line {
 
 // ParseLine parses x1,y1 -> x2,y2
 func ParseLine(v string) Line {
+	v = strings.ReplaceAll(v, " -> ", " ")
+	v = strings.ReplaceAll(v, ",", " ")
 	var l Line
-	fmt.Scanf("%v,%v -> %v,%v", &l.from.x, &l.from.y, &l.to.x, &l.to.y)
+	n, _ := fmt.Sscan(v, &l.from.x, &l.from.y, &l.to.x, &l.to.y)
+	debug.Log("ParseLine:", n, v)
 	return l
 }
 
@@ -80,6 +88,20 @@ func (me *Grid) SetPos(p Pos) {
 	me.grid[p.y][p.x]++
 }
 
+func (me *Grid) Dump() string {
+	var buf bytes.Buffer
+	p, _ := nexus.NewPrinter(&buf)
+	for y := 0; y < len(me.grid); y++ {
+		for x := 0; x < len(me.grid); x++ {
+			p.Print(me.grid[y][x])
+		}
+		p.Println()
+	}
+	return buf.String()
+}
+
+// ----------------------------------------
+
 type Line struct {
 	from, to Pos
 }
@@ -108,7 +130,7 @@ type Pos struct {
 }
 
 func (me Pos) String() string {
-	return fmt.Sprintf("%v,%v", me.x, me.y)
+	return fmt.Sprintf("%d,%d", me.x, me.y)
 }
 
 func (me Pos) Next(p Pos) Pos {

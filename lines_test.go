@@ -3,6 +3,8 @@ package advent
 import "testing"
 
 func TestParseLine(t *testing.T) {
+	SetDebug(t)
+	defer SetDebug(nil)
 	in := "1,1 -> 3,3"
 	l := ParseLine(in)
 
