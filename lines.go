@@ -11,18 +11,24 @@ import (
 	"github.com/gregoryv/nexus"
 )
 
-func CountIntersections(filename string, x, y int) {
+func CountHVIntersections(filename string, x, y int) {
+	CountIntersections(filename, x, y, func(l Line) bool {
+		return l.IsHorizontal() || l.IsVertical()
+	})
+}
+
+func CountIntersections(filename string, x, y int, keep func(Line) bool) {
 	fh, err := os.Open(filename)
 	shouldNot(err)
 	defer fh.Close()
-	CountIntersectionsTo(os.Stdout, fh, x, y)
+	CountIntersectionsTo(os.Stdout, fh, x, y, keep)
 }
 
-func CountIntersectionsTo(w io.Writer, r io.Reader, x, y int) {
+func CountIntersectionsTo(w io.Writer, r io.Reader, x, y int, keep func(Line) bool) {
 	g := NewGrid(x, y)
 	lines := ParseLines(r)
 	for _, line := range lines {
-		if line.IsHorizontal() || line.IsVertical() {
+		if keep(line) {
 			g.Set(line)
 		}
 	}

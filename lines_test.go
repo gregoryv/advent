@@ -15,10 +15,10 @@ func TestParseLine(t *testing.T) {
 	}
 }
 
-func xTestCountInteractions(t *testing.T) {
+func xTestCountHVInteractions(t *testing.T) {
 	SetDebug(t)
 	defer SetDebug(nil)
-	CountIntersections("testdata/5.given", 10, 10)
+	CountHVIntersections("testdata/5.given", 10, 10)
 	t.Fail()
 }
 
