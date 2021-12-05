@@ -1,5 +1,13 @@
 package advent
 
+func Example_Day5() {
+	CountIntersections("testdata/5.given")
+	// output:
+	// 5
+}
+
+// ----------------------------------------
+
 func Example_Day4() {
 	Winner("testdata/4.given")
 	Winner("testdata/4.input")
@@ -9,6 +17,8 @@ func Example_Day4() {
 	// 16716
 	// 4880
 }
+
+// ----------------------------------------
 
 func Example_Day3() {
 	PowerCons("testdata/3.given", 5)
