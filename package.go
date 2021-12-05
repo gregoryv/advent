@@ -3,14 +3,13 @@ package advent
 import "log"
 
 func shouldNot(err error) {
-	if err == nil {
-		return
+	if err != nil {
+		fatalFunc(err)
 	}
-	fatalHandler(err)
 }
 
 // Used by shouldNot
-var fatalHandler func(...interface{}) = log.Fatal
+var fatalFunc func(...interface{}) = log.Fatal
 
 // SetDebug(nil) to reset
 func SetDebug(v logPrinter) {

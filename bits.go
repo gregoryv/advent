@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
 	"strconv"
 )
 
@@ -52,10 +51,7 @@ func ParseBitsBytes(p []byte) Bits {
 
 func ParseBits(s string) Bits {
 	v, err := strconv.ParseInt(s, 2, 64)
-	if err != nil {
-		fmt.Fprint(os.Stderr, err)
-		os.Exit(1)
-	}
+	shouldNot(err)
 	return Bits(v)
 }
 
