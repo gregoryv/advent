@@ -22,10 +22,14 @@ func CountIntersectionsTo(w io.Writer, r io.Reader, x, y int) {
 	g := NewGrid(x, y)
 	lines := ParseLines(r)
 	for _, line := range lines {
-		g.Set(line)
+		if line.IsHorizontal() || line.IsVertical() {
+			g.Set(line)
+		}
 	}
 	fmt.Fprintln(w, g.IntersectCount())
-	fmt.Print(g.Dump())
+	if debugOn {
+		debug.Logf("\n%s", g.Dump())
+	}
 }
 
 // ParseLines parses new line separated
@@ -125,6 +129,9 @@ func (l Line) Walk(fn func(p Pos)) {
 	fn(l.to)
 }
 
+func (l Line) IsVertical() bool   { return l.from.y == l.to.y }
+func (l Line) IsHorizontal() bool { return l.from.x == l.to.x }
+
 type Pos struct {
 	x, y int
 }
@@ -147,7 +154,7 @@ func (me Pos) Next(p Pos) Pos {
 	switch {
 	case p.y > me.y:
 		next.y++
-	case p.x < me.x:
+	case p.y < me.y:
 		next.y--
 	}
 	return next
