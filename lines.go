@@ -58,7 +58,11 @@ func (me *Grid) IntersectCount() int {
 }
 
 func (me *Grid) Set(l Line) {
-	// todo update count in each cell the line crosses
+	l.Walk(me.SetPos)
+}
+
+func (me *Grid) SetPos(p Pos) {
+	me.grid[p.y][p.x]++
 }
 
 type Line struct {
@@ -69,10 +73,45 @@ func (me Line) String() string {
 	return fmt.Sprintf("%s -> %s", me.from, me.to)
 }
 
+// Walk calls fn with each position from to start
+func (l Line) Walk(fn func(p Pos)) {
+	fn(l.from)
+	prev := l.from
+	for {
+		next := prev.Next(l.to)
+		if prev.x == next.x && prev.y == next.y {
+			break
+		}
+		fn(next)
+		prev = next
+	}
+	fn(l.to)
+}
+
 type Pos struct {
 	x, y int
 }
 
 func (me Pos) String() string {
 	return fmt.Sprintf("%v,%v", me.x, me.y)
+}
+
+func (me Pos) Next(p Pos) Pos {
+	next := me // copy
+
+	// direction of lines
+	switch {
+	case p.x > me.x:
+		next.x++
+	case p.x < me.x:
+		next.x--
+	}
+
+	switch {
+	case p.y > me.y:
+		next.y++
+	case p.x < me.x:
+		next.y--
+	}
+	return next
 }
