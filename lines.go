@@ -1,6 +1,7 @@
 package advent
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -23,14 +24,19 @@ func CountIntersectionsTo(w io.Writer, r io.Reader) {
 //   x1,y1 -> x2,y2
 //
 func ParseLines(r io.Reader) []Line {
-	// todo
-	return nil
+	s := bufio.NewScanner(r)
+	lines := make([]Line, 0)
+	for s.Scan() {
+		l := ParseLine(s.Text())
+		lines = append(lines, l)
+	}
+	return lines
 }
 
 // ParseLine parses x1,y1 -> x2,y2
 func ParseLine(v string) Line {
 	var l Line
-	// todo
+	fmt.Scanf("%v,%v -> %v,%v", &l.from.x, &l.from.y, &l.to.x, &l.to.y)
 	return l
 }
 
