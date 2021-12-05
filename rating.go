@@ -30,7 +30,6 @@ func LifeSupportRating(filename string, width int) {
 func LifeSupportRatingTo(w io.Writer, r io.Reader, width int) {
 	rating := NewRating(width)
 	rating.Parse(r)
-	//	rating.debug = true
 	fmt.Fprintln(w, rating.Oxygen()*rating.CO2Scrub())
 }
 
@@ -49,8 +48,6 @@ type Rating struct {
 	rad   *Radiation
 
 	nb NBits
-
-	debug bool
 }
 
 func (me *Rating) Parse(r io.Reader) {
@@ -72,14 +69,14 @@ func (me *Rating) Dump() string {
 
 func (me *Rating) Oxygen() Bits {
 	b := me.filter(me.oxygenRating, me.nb, me.nb, me.width, 0)
-	if me.debug {
+	if debugOn {
 		fmt.Println(b.Dump(me.width), "oxygen")
 	}
 	return b
 }
 
 func (me *Rating) oxygenRating(rad *Radiation, width, i int) func(Bits) bool {
-	if me.debug {
+	if debugOn {
 		k := 1
 		if rad.one[i] < rad.zero[i] {
 			k = 0
@@ -100,14 +97,14 @@ func (me *Rating) oxygenRating(rad *Radiation, width, i int) func(Bits) bool {
 
 func (me *Rating) CO2Scrub() Bits {
 	b := me.filter(me.co2scrub, me.nb, me.nb, me.width, 0)
-	if me.debug {
+	if debugOn {
 		fmt.Println(b.Dump(me.width), "co2")
 	}
 	return b
 }
 
 func (me *Rating) co2scrub(rad *Radiation, width, i int) func(Bits) bool {
-	if me.debug {
+	if debugOn {
 		k := 0
 		if rad.one[i] < rad.zero[i] {
 			k = 1
@@ -137,7 +134,7 @@ func (me *Rating) filter(match matchFunc, last, in NBits, width, i int) Bits {
 		log.Println("stopped")
 		return 0
 	}
-	if me.debug {
+	if debugOn {
 		fmt.Println(in.Dump(width))
 	}
 	//
