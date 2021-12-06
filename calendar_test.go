@@ -1,5 +1,13 @@
 package advent
 
+func Example_Day6() {
+	LanternFish("testdata/6.given", 80)
+	// output:
+	// 5934
+}
+
+// ----------------------------------------
+
 func Example_Day5() {
 	CountHVIntersections("testdata/5.given", 10, 10)
 	CountHVIntersections("testdata/5.input", 1000, 1000)
