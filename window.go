@@ -45,13 +45,20 @@ func loadInts(filename string) []int {
 	shouldNot(err)
 
 	lines := strings.Split(string(data), "\n")
-	in := make([]int, len(lines))
-	for i, line := range lines {
-		if line == "" { // skip empty lines
+	return toInts(lines)
+}
+
+func toInts(in []string) []int {
+	out := make([]int, 0)
+	for _, v := range in {
+		if v == "" { // skip empty lines
 			continue
 		}
-		in[i], err = strconv.Atoi(line)
+		iv, err := strconv.Atoi(v)
 		shouldNot(err)
+
+		out = append(out, iv)
+
 	}
-	return in
+	return out
 }
