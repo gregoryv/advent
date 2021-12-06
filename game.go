@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -194,7 +193,6 @@ func (me *Game) Score() int {
 	if board == nil {
 		return -1
 	}
-	log.Println(me.lastNum, board.SumUnchecked())
 	return me.lastNum * board.SumUnchecked()
 }
 
