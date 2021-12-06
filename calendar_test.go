@@ -4,11 +4,12 @@ func Example_Day6() {
 	LanternFish("testdata/6.given", 80)
 	LanternFish("testdata/6.input", 80)
 	LanternFish("testdata/6.given", 256)
-	//	LanternFish("testdata/6.input", 256) // must find function
+	LanternFish("testdata/6.input", 256)
 	// output:
 	// 5934
 	// 354564
 	// 26984457539
+	// 1609058859115
 }
 
 // ----------------------------------------

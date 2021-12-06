@@ -19,32 +19,44 @@ func LanternFishTo(w io.Writer, r io.Reader, days int) {
 	var buf bytes.Buffer
 	io.Copy(&buf, r)
 	initial := strings.Split(buf.String(), ",")
-
 	sim := &FishSim{
-		lanterns: toInts(initial),
+		lanterns: make([]int, 9),
+	}
+	ages := toInts(initial)
+	for _, v := range ages {
+		sim.lanterns[v] += 1
 	}
 	sim.Run(days)
-	fmt.Fprintln(w, len(sim.lanterns))
+	fmt.Fprintln(w, sim.Total())
 }
 
 type FishSim struct {
-	lanterns []int
+	lanterns []int // 0 .. 8
 }
 
 func (me *FishSim) Run(days int) {
+	l := len(me.lanterns)
 	for d := 0; d < days; d++ {
-		born := make([]int, 0)
-		for i, age := range me.lanterns {
-			switch age {
-			case 0:
-				born = append(born, 8)
-				me.lanterns[i] = 6
-			default:
-				me.lanterns[i]--
-			}
+		parents := me.lanterns[0]
+		born := parents
+
+		// shift all lanterns, ie. they are one day closer to being parents
+		for i := 1; i < l; i++ {
+			me.lanterns[i-1] = me.lanterns[i]
 		}
-		if len(born) > 0 {
-			me.lanterns = append(me.lanterns, born...)
-		}
+
+		// current parents will be parents again in 6 days
+		me.lanterns[6] += parents
+
+		// add new born to the group
+		me.lanterns[8] = born
 	}
+}
+
+func (me *FishSim) Total() int {
+	var sum int
+	for _, v := range me.lanterns {
+		sum += v
+	}
+	return sum
 }
