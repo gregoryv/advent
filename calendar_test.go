@@ -1,5 +1,15 @@
 package advent
 
+func Example_Day7() {
+	HorizontalAlign("testdata/7.given")
+	HorizontalAlign("testdata/7.input")
+	// output:
+	// 37
+	// 326132
+}
+
+// ----------------------------------------
+
 func Example_Day6() {
 	LanternFish("testdata/6.given", 80)
 	LanternFish("testdata/6.input", 80)
