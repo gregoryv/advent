@@ -3,9 +3,13 @@ package advent
 func Example_Day7() {
 	HorizontalAlign("testdata/7.given")
 	HorizontalAlign("testdata/7.input")
+	HorizontalAlignReal("testdata/7.given")
+	HorizontalAlignReal("testdata/7.input")
 	// output:
 	// 37
 	// 326132
+	// 168
+	// 88612508
 }
 
 // ----------------------------------------
